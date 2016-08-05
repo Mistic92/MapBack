@@ -1,0 +1,58 @@
+plugins {
+    id 'com.jfrog.bintray' version '1.7'
+}
+
+apply plugin: 'groovy'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    testCompile 'junit:junit:4.12'
+}
+
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+group = 'com.lukaszbyjos.mappingbackup'
+version = '1.0.0'
+
+task sourceJar(type: Jar) {
+    description = "An archive of the source code for Maven Central"
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task groovydocJar(type: Jar) {
+    description = "An archive of the GroovyDocs for Maven Central"
+    classifier = 'javadoc'
+    from groovydoc
+}
+
+configurations {
+    archives
+}
+artifacts {
+    archives jar, groovydocJar, sourceJar
+}
+
+bintray {
+    user = bintray_user
+    key = bintray_api_key
+    dryRun = false
+    publish = false
+    configurations = ['archives']
+    pkg {
+        repo = 'maven'
+        name = 'map-back'
+        desc = 'Create copy of release apk file and related to it mapping file'
+        vcsUrl = 'https://github.com/Mistic92/MapBack'
+        licenses = ['Apache-2.0']
+        labels = ['android', 'gradle', 'plugin', 'proguard', 'mapping']
+        publicDownloadNumbers = true
+    }
+}
